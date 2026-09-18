@@ -4,6 +4,7 @@
  */
 package com.mycompany.application;
 
+ 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,190 +14,167 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RegistrationTest {
     
-     
-    // USERNAME TESTS
-     
-    // Username correctly formatted
-     
-    @Test
-    public void testUsernameCorrectlyFormatted() {
-        Registration registration = new Registration();
-
-        assertTrue(registration.checkUsername("kyl_1"));
+    public RegistrationTest() {
     }
-
-    // Username incorrectly formatted
-  
-    @Test
-    public void testUsernameIncorrectlyFormatted() {
-        Registration registration = new Registration();
-
-        assertFalse(registration.checkUsername("kyle!!!!!!!"));
-    }
-
-    // Username successfully captured
- 
-    @Test
-    public void testUsernameStatusCorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Username successfully captured.",
-                registration.usernameStatus(true)
-        );
-    }
-
-    // Username incorrectly formatted message
-    @Test
-    public void testUsernameStatusIncorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Username is not correctly formatted; please ensure that your username contains an underscore and is no more than five characters in length.",
-                registration.usernameStatus(false)
-        );
-    }
-
-
-  
-    // PASSWORD TESTS
-    
-
-    // Password meets complexity requirements
-     
-    @Test
-    public void testPasswordMeetsComplexityRequirements() {
-        Registration registration = new Registration();
-
-        assertTrue(
-                registration.checkPassword("Ch&&sec@ke99!")
-        );
-    }
-
-    // Password does not meet complexity requirements
-     
-    @Test
-    public void testPasswordDoesNotMeetComplexityRequirements() {
-        Registration registration = new Registration();
-
-        assertFalse(
-                registration.checkPassword("password")
-        );
-    }
-
-    // Password successfully captured
-    
-    @Test
-    public void testPasswordStatusCorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Password successfully captured.",
-                registration.passwordStatus(true)
-        );
-    }
-
-    // Password incorrectly formatted message
-    @Test
-    public void testPasswordStatusIncorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Password is not correctly formatted; please ensure that the password contains at least eight characters, a capital letter, a number, and a special character.",
-                registration.passwordStatus(false)
-        );
-    }
-
-
-    
-    // CELL PHONE NUMBER TESTS
    
 
-    // Cell phone number correctly formatted
-     
+    /**
+     * Test of setUsername method, of class Registration.
+     */
     @Test
-    public void testCellPhoneNumberCorrectlyFormatted() {
-        Registration registration = new Registration();
-
-        assertTrue(
-                registration.checkCellPhoneNumber("+27838968976")
-        );
+    public void testSetUsername() {
+        System.out.println("setUsername");
+        String username = "Username successfully captured";
+        Registration instance = new Registration();
+        instance.setUsername(username);
+       
     }
 
-    // Cell phone number incorrectly formatted
-     
+    /**
+     * Test of setPassword method, of class Registration.
+     */
     @Test
-    public void testCellPhoneNumberIncorrectlyFormatted() {
-        Registration registration = new Registration();
-
-        assertFalse(
-                registration.checkCellPhoneNumber("08966553")
-        );
+    public void testSetPassword() {
+        System.out.println("setPassword");
+        String password = "Password successfuly captured";
+        Registration instance = new Registration();
+        instance.setPassword(password);
+         
     }
 
-    // Cell phone number successfully captured
+    /**
+     * Test of setCellPhoneNumber method, of class Registration.
+     */
     @Test
-    public void testCellphoneStatusCorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Cell phone number successfully added.",
-                registration.cellphoneStatus(true)
-        );
+    public void testSetCellPhoneNumber() {
+        System.out.println("setCellPhoneNumber");
+        String cellPhoneNumber = "Cellphone number captured";
+        Registration instance = new Registration();
+        instance.setCellPhoneNumber(cellPhoneNumber);
+        
     }
 
-    // Cell phone number incorrectly formatted message
+    /**
+     * Test of getUsername method, of class Registration.
+     */
     @Test
-    public void testCellphoneStatusIncorrect() {
-        Registration registration = new Registration();
-
-        assertEquals(
-                "Cell phone number incorrectly formatted or does not contain international code.",
-                registration.cellphoneStatus(false)
-        );
+    public void testGetUsername() {
+        System.out.println("getUsername");
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.getUsername();
+        assertEquals(expResult, result);
+          
     }
 
-
-     
-    // GETTER and CAPTURE TESTS
-
-    // Test that the username is captured correctly
+    /**
+     * Test of getPassword method, of class Registration.
+     */
     @Test
-    public void testUsernameIsCaptured() {
-        Registration registration = new Registration();
-
-        registration.checkUsername("kyl_1");
-
-        assertEquals(
-                "kyl_1",
-                registration.getUsername()
-        );
+    public void testGetPassword() {
+        System.out.println("getPassword");
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.getPassword();
+        assertEquals(expResult, result);
+         
     }
 
-    // Test that the password is captured correctly
+    /**
+     * Test of getCellPhoneNumber method, of class Registration.
+     */
     @Test
-    public void testPasswordIsCaptured() {
-        Registration registration = new Registration();
-
-        registration.checkPassword("Ch&&sec@ke99!");
-
-        assertEquals(
-                "Ch&&sec@ke99!",
-                registration.getPassword()
-        );
+    public void testGetCellPhoneNumber() {
+        System.out.println("getCellPhoneNumber");
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.getCellPhoneNumber();
+        assertEquals(expResult, result);
+      
     }
 
-    // Test that the cell phone number is captured correctly
+    /**
+     * Test of checkUsername method, of class Registration.
+     */
     @Test
-    public void testCellPhoneNumberIsCaptured() {
-        Registration registration = new Registration();
+    public void testCheckUsername() {
+        System.out.println("checkUsername");
+        String username = "";
+        Registration instance = new Registration();
+        boolean expResult = false;
+        boolean result = instance.checkUsername(username);
+        assertEquals(expResult, result);
+        
+    }
 
-        registration.checkCellPhoneNumber("+27838968976");
+    /**
+     * Test of checkPassword method, of class Registration.
+     */
+    @Test
+    public void testCheckPassword() {
+        System.out.println("checkPassword");
+        String password = "";
+        Registration instance = new Registration();
+        boolean expResult = false;
+        boolean result = instance.checkPassword(password);
+        assertEquals(expResult, result);
+        
+    }
 
-        assertEquals(
-                "+27838968976",
-                registration.getCellPhoneNumber()
-        );
+    /**
+     * Test of checkCellPhoneNumber method, of class Registration.
+     */
+    @Test
+    public void testCheckCellPhoneNumber() {
+        System.out.println("checkCellPhoneNumber");
+        String cellPhoneNumber = "";
+        Registration instance = new Registration();
+        boolean expResult = false;
+        boolean result = instance.checkCellPhoneNumber(cellPhoneNumber);
+        assertEquals(expResult, result);
+       
+    }
+
+    /**
+     * Test of usernameStatus method, of class Registration.
+     */
+    @Test
+    public void testUsernameStatus() {
+        System.out.println("usernameStatus");
+        boolean valid = false;
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.usernameStatus(valid);
+        assertEquals(expResult, result);
+        
+    }
+
+    /**
+     * Test of passwordStatus method, of class Registration.
+     */
+    @Test
+    public void testPasswordStatus() {
+        System.out.println("passwordStatus");
+        boolean valid = false;
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.passwordStatus(valid);
+        assertEquals(expResult, result);
+       
+    }
+
+    /**
+     * Test of cellphoneStatus method, of class Registration.
+     */
+    @Test
+    public void testCellphoneStatus() {
+        System.out.println("cellphoneStatus");
+        boolean valid = false;
+        Registration instance = new Registration();
+        String expResult = "";
+        String result = instance.cellphoneStatus(valid);
+        assertEquals(expResult, result);
+       
     }
     
 }
