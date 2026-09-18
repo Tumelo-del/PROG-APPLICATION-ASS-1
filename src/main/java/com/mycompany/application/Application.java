@@ -51,11 +51,7 @@ public class Application {
 
             // Create Login object using the successfully
             // captured registration details
-            Login login = new Login(
-                    registration.getUsername(),
-                    registration.getPassword(),
-                    registration.getCellPhoneNumber()
-            );
+            Login login = new Login(registration.getUsername(),registration.getPassword(),registration.getCellPhoneNumber() );
 
 
             // Login
@@ -67,10 +63,7 @@ public class Application {
             String loginPassword = input.nextLine();
 
             // Check login details
-            boolean loginSuccessful = login.loginUser(
-                    loginUsername,
-                    loginPassword
-            );
+            boolean loginSuccessful = login.loginUser(loginUsername,loginPassword);
 
             // Display login status
             System.out.println(

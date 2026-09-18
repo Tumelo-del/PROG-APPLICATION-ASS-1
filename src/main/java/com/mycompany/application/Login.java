@@ -53,8 +53,7 @@ public class Login {
 
     // Checks whether login details match registered details
     public boolean loginUser(String username, String password) {
-        return username.equals(registeredUsername)
-                && password.equals(registeredPassword);
+        return username.equals(registeredUsername) && password.equals(registeredPassword);
     }
 
     // Returns login status message
