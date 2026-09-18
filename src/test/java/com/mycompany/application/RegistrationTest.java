@@ -61,7 +61,7 @@ public class RegistrationTest {
     public void testGetUsername() {
         System.out.println("getUsername");
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = null;
         String result = instance.getUsername();
         assertEquals(expResult, result);
           
@@ -74,7 +74,7 @@ public class RegistrationTest {
     public void testGetPassword() {
         System.out.println("getPassword");
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = null;
         String result = instance.getPassword();
         assertEquals(expResult, result);
          
@@ -87,7 +87,7 @@ public class RegistrationTest {
     public void testGetCellPhoneNumber() {
         System.out.println("getCellPhoneNumber");
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = null;
         String result = instance.getCellPhoneNumber();
         assertEquals(expResult, result);
       
@@ -143,7 +143,7 @@ public class RegistrationTest {
         System.out.println("usernameStatus");
         boolean valid = false;
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = "Username is not correctly formatted, please ensure that your username ccontains an underscore and is no more than five characters in length.";
         String result = instance.usernameStatus(valid);
         assertEquals(expResult, result);
         
@@ -157,7 +157,7 @@ public class RegistrationTest {
         System.out.println("passwordStatus");
         boolean valid = false;
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = "Password is not correctly formatted; please ensure that the password contains at least eight characters, a capital letter, a number, and a special character.";
         String result = instance.passwordStatus(valid);
         assertEquals(expResult, result);
        
@@ -171,7 +171,7 @@ public class RegistrationTest {
         System.out.println("cellphoneStatus");
         boolean valid = false;
         Registration instance = new Registration();
-        String expResult = "";
+        String expResult = "Cell phone number incorrectly formatted or does not contain international code.";
         String result = instance.cellphoneStatus(valid);
         assertEquals(expResult, result);
        
