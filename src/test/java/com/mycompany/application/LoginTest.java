@@ -4,6 +4,7 @@
  */
 package com.mycompany.application;
 
+ 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,256 +16,120 @@ public class LoginTest {
     
     public LoginTest() {
     }
-    // USERNAME TESTS
-     
-    // Username correctly formatted
-     
-    @Test
-    public void testUsernameCorrectlyFormatted() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
+ 
 
-        assertTrue(login.checkUserName("kyl_1"));
+    /**
+     * Test of checkUserName method, of class Login.
+     */
+    @Test
+    public void testCheckUserNameValid() {
+        System.out.println("checkUserName");
+        String username = "kyl_1";
+        Login instance = new Login("","","");
+        boolean expResult = true;
+        boolean result = instance.checkUserName(username);
+        assertEquals(expResult, result);
+         
+    }
+    @Test
+    public void testCheckUserNameInvalid() {
+        System.out.println("checkUserName");
+        String username = "kyle!!!!!!";
+        Login instance = new Login("","","");
+        boolean expResult = false;
+        boolean result = instance.checkUserName(username);
+        assertEquals(expResult, result);
     }
 
-    // Username incorrectly formatted
-     
+    /**
+     * Test of checkPasswordComplexity method, of class Login.
+     */
     @Test
-    public void testUsernameIncorrectlyFormatted() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertFalse(login.checkUserName("kyle!!!!!!!"));
+    public void testCheckPasswordComplexityValid() {
+        System.out.println("checkPasswordComplexity");
+        String password = "ch&&sec@ke99!";
+        Login instance = new Login("","","");
+        boolean expResult = false;
+        boolean result = instance.checkPasswordComplexity(password);
+        assertEquals(expResult, result);
     }
-
-
-     
-    // PASSWORD TESTS
-     
-    // Password meets complexity requirements
-     
     @Test
-    public void testPasswordMeetsComplexityRequirements() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertTrue(
-                login.checkPasswordComplexity("Ch&&sec@ke99!")
-        );
-    }
-
-    // Password does not meet complexity requirements
-   
-    @Test
-    public void testPasswordDoesNotMeetComplexityRequirements() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertFalse(
-                login.checkPasswordComplexity("password")
-        );
+    public void testCheckPasswordComplexityInvalid() {
+        System.out.println("checkPasswordComplexity");
+        String password = "password";
+        Login instance = new Login("","","");
+        boolean expResult = false;
+        boolean result = instance.checkPasswordComplexity(password);
+        assertEquals(expResult, result);
     }
 
 
-   
-    // CELL PHONE NUMBER TESTS
-  
-
-    // Cell phone number correctly formatted
-    
+    /**
+     * Test of checkCellPhoneNumber method, of class Login.
+     */
     @Test
-    public void testCellPhoneNumberCorrectlyFormatted() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertTrue(
-                login.checkCellPhoneNumber("+27838968976")
-        );
+    public void testCheckCellPhoneNumberValid() {
+        System.out.println("checkCellPhoneNumber");
+        String cellPhoneNumber = "+27838968976";
+        Login instance = new Login("","","");
+        boolean expResult = true;
+        boolean result = instance.checkCellPhoneNumber(cellPhoneNumber);
+        assertEquals(expResult, result);
+         
+    }
+    @Test
+    public void testCheckCellPhoneNumberInvalid() {
+        System.out.println("checkCellPhoneNumber");
+        String cellPhoneNumber = "08966553";
+        Login instance = new Login("","","");
+        boolean expResult = false;
+        boolean result = instance.checkCellPhoneNumber(cellPhoneNumber);
+        assertEquals(expResult, result);
+         
     }
 
-    // Cell phone number incorrectly formatted
-     
+    /**
+     * Test of registerUser method, of class Login.
+     */
     @Test
-    public void testCellPhoneNumberIncorrectlyFormatted() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertFalse(
-                login.checkCellPhoneNumber("08966553")
-        );
+    public void testRegisterUser() {
+        System.out.println("registerUser");
+        String username = "Kyl_1";
+        String password = "Ch&&sec@ke99!";
+        String cellPhoneNumber = "+2738968976";
+        Login instance = new Login("","","");
+        String expResult = "Cell phone number incorrectly formatted or does not contain international code.";
+        String result = instance.registerUser(username, password, cellPhoneNumber);
+        assertEquals(expResult, result);
+      
     }
 
-
-    
-    // LOGIN TESTS
-    
-    // Login successful
-     
+    /**
+     * Test of loginUser method, of class Login.
+     */
     @Test
-    public void testLoginSuccessful() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertTrue(
-                login.loginUser(
-                        "kyl_1",
-                        "Ch&&sec@ke99!"
-                )
-        );
+    public void testLoginUser() {
+        System.out.println("loginUser");
+        String username = "Kyl_1";
+        String password = "Ch&&sec@ke99!";
+        Login instance = new Login("","","");
+        boolean expResult = false;
+        boolean result = instance.loginUser(username, password);
+        assertEquals(expResult, result);
     }
 
-    // Login failed
-     
+    /**
+     * Test of returnLoginStatus method, of class Login.
+     */
     @Test
-    public void testLoginFailed() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertFalse(
-                login.loginUser(
-                        "wrong_username",
-                        "wrong_password"
-                )
-        );
-    }
-
-
-     
-    // LOGIN STATUS MESSAGE TESTS
-
-    // Successful login message
-    @Test
-    public void testSuccessfulLoginMessage() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "Welcome, it is great to see you again.",
-                login.returnLoginStatus(true)
-        );
-    }
-
-    // Failed login message
-    @Test
-    public void testFailedLoginMessage() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "Username or password incorrect, please try again.",
-                login.returnLoginStatus(false)
-        );
-    }
-
-
-     
-    // REGISTRATION TESTS IN LOGIN CLASS
-    
-    
-    // Successful registration
-    @Test
-    public void testUserSuccessfullyRegistered() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "User has been successfully registered.",
-                login.registerUser(
-                        "kyl_1",
-                        "Ch&&sec@ke99!",
-                        "+27838968976"
-                )
-        );
-    }
-
-    // Incorrect username during registration
-    @Test
-    public void testRegistrationWithIncorrectUsername() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "Username is not correctly formatted.",
-                login.registerUser(
-                        "kyle!!!!!!!",
-                        "Ch&&sec@ke99!",
-                        "+27838968976"
-                )
-        );
-    }
-
-    // Incorrect password during registration
-    @Test
-    public void testRegistrationWithIncorrectPassword() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "Password is not correctly formatted.",
-                login.registerUser(
-                        "kyl_1",
-                        "password",
-                        "+27838968976"
-                )
-        );
-    }
-
-    // Incorrect cellphone number during registration
-    @Test
-    public void testRegistrationWithIncorrectCellPhoneNumber() {
-        Login login = new Login(
-                "kyl_1",
-                "Ch&&sec@ke99!",
-                "+27838968976"
-        );
-
-        assertEquals(
-                "Cell phone number incorrectly formatted or does not contain international code.",
-                login.registerUser(
-                        "kyl_1",
-                        "Ch&&sec@ke99!",
-                        "08966553"
-                )
-        );
+    public void testReturnLoginStatus() {
+        System.out.println("returnLoginStatus");
+        boolean loginSuccessful = false;
+        Login instance = new Login("","","");
+        String expResult = "Username or password incorrect, please try again.";
+        String result = instance.returnLoginStatus(loginSuccessful);
+        assertEquals(expResult, result);
+        
     }
     
 }

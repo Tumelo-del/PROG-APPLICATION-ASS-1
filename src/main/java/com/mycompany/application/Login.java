@@ -25,10 +25,7 @@ public class Login {
 
     // Checks password complexity
     public boolean checkPasswordComplexity(String password) {
-        return password.length() >= 8
-                && password.matches(".*[A-Z].*")
-                && password.matches(".*[0-9].*")
-                && password.matches(".*[^a-zA-Z0-9].*");
+        return password.length() >= 8 && password.matches(".*[A-Z].*") && password.matches(".*[0-9].*")  && password.matches(".*[^a-zA-Z0-9].*");
     }
 
     // Checks cellphone number format
