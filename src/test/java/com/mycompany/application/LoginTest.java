@@ -47,9 +47,9 @@ public class LoginTest {
     @Test
     public void testCheckPasswordComplexityValid() {
         System.out.println("checkPasswordComplexity");
-        String password = "ch&&sec@ke99!";
+        String password = "Ch&&sec@ke99!";
         Login instance = new Login("","","");
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = instance.checkPasswordComplexity(password);
         assertEquals(expResult, result);
     }

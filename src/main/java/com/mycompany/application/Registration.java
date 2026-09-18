@@ -54,10 +54,7 @@ public class Registration {
 
     // Checks whether the password meets the complexity requirements
     public boolean checkPassword(String password) {
-        if (password.length() >= 8
-                && password.matches(".*[A-Z].*")
-                && password.matches(".*[0-9].*")
-                && password.matches(".*[^a-zA-Z0-9].*")) {
+        if (password.length() >= 8 && password.matches(".*[A-Z].*") && password.matches(".*[0-9].*") && password.matches(".*[^a-zA-Z0-9].*")) {
 
             setPassword(password);
             return true;
