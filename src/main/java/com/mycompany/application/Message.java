@@ -5,9 +5,10 @@
 package com.mycompany.application;
 
  
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
-import java.util.Scanner;
+ 
 
 /**
  *
@@ -15,188 +16,156 @@ import java.util.Scanner;
  */
 public class Message {
     
-    // Message variables
-    private String messageID;
-    private int messageNumber;
-    private String recipient;
-    private String message;
-    private String messageHash;
-    
-     // Stores messages that have been successfully sent
-    // Stores sent messages
-    private static ArrayList<Message> sentMessages = new ArrayList<>();
-
-    // Total number of messages sent
-    private static int totalMessages = 0;
-
-    
-
-
-    // Constructor
-    public Message(int messageNumber,String recipient,String message) {
-
+        private String messageId;
+        private int messageNumber;
+        private String recipient;
+        private String message;
+        private String messageHash;
+        private String status;
+        
+        //shared by all messages hence they are static.
+        private static int totalSent = 0;
+        private static String sentReport = "";
+        
+        //constructor that runs everytime a new message is created
+        public Message(String messageId, int messageNumber, String recipient,
+        String message){
+        this.messageId = messageId;
         this.messageNumber = messageNumber;
         this.recipient = recipient;
         this.message = message;
-
-      // Generate a random 10-digit Message ID
-    public static String generateMessageID() {
-    Random random = new Random();
-    int firstHalf = random.nextInt(90000) + 10000;   // 10000-99999
-    int secondHalf = random.nextInt(90000) + 10000;  // 10000-99999
-
-    return "" + firstHalf + secondHalf;
+        this.status = "Captured";
+        this.messageHash = createMessageHash();
 }
-
-public boolean checkMessageID() {
-    return messageID.length() == 10;
+        //makes a random 10 digit number from 2 5 digits
+        //int cannot hold 10 digit.
+        public static String generateMessageID(){
+        Random rand = new Random();
+        int firstHalf = rand.nextInt(90000) + 10000;
+        int secondHalf = rand.nextInt(90000) + 10000;
+        return ""+firstHalf+secondHalf;
 }
+        //checking if the ID is not more than 10 chars
+        public boolean checkMessageID(){
+        return messageId.length()<=10;
+        }
         
-     
-    // String: check recipient cellphone
-    public static String checkRecipientCell(String recipient) {
+        //recipient must be no more than 10 chars and start with an
+        //international code (+)
+        public boolean checkRecipientCell(String cell) {
+        return cell.matches("^\\+27\\d{9}$");
+    }
+        
+        
+        //validate that the message is not more than 250 chars
+        public static String checkMessage(String msg){
+        if (msg.length()<=250){
+        return "Message sent";
+        }else{
+        return "Please enter a message of less than 250 characters.";
+        }
+        }
+        
+        //Message Hash = first 2 digits of ID : message number : first word
+        //+ last word. In CAPITALS
+        //e.g 0012345678, message 0, "Hi thanks"
+        //00:0:HITHANKS -> Message Hash
+        public String createMessageHash(){
+        String msg = message.trim();
+        //first 2 digits of ID
+        String idFirst2 = messageId.substring(0,2);
+        //First word -from where it starts to where theres a space
+        String firstWord;
+        int firstSpace = msg.indexOf(" ");
+        if(firstSpace == -1){
+        firstWord = msg;
+        }else{
+        firstWord = msg.substring(0,firstSpace);
+        }
+        //last word -from after the last space to the end
+        int lastSpace = msg.lastIndexOf(" ");
+        String lastWord = msg.substring(lastSpace+1);
+        String code = idFirst2 + ":" + messageNumber +":"+
+        firstWord + lastWord;
+        return code.toUpperCase();
+        }
+        
+        
+        //1 - send, 2 - disregard, 3 - store to send later
+        public String sentMessage(int choice){
+        if(choice == 1){
+        status = "Sent";
+        return "Message successfully sent";
+        }else if(choice == 2){
+        status = "Disregarded";
+        return "Press 0 to delete the message";
+        }else if(choice == 3){
+        status = "Stored";
+        storeMessage();
+        return "Message successfully stored";
+        }else{
+        return "invalid option";
+        }
+        }
+        //add a message to the shared total
+        public void recordMessage(){
+        if ("Sent".equals(status)){
+        totalSent = totalSent + 1; //accumulator
+        sentReport = sentReport + getDetails() +
+                
+                }
+        }
+        public String getDetails(){
+        return "Message ID: " + messageId +
+        "Message Hash: "+ messageHash + "Recipient: "+ recipient + "Message: "+ message;
+        }
+        //every message that is sent details
+        public static String printMessages(){
+        if (sentReport.equals("")){
+        return "No messages sent yet";
+        }else{
+        return sentReport;
+        }
+        }
+        public static int returnTotalMessages(){
+        return totalSent;
+        }
+        
+        //saves the message to a JSON file (one JSON object per line)
+        
+        public void storeMessage() {
+    String json = String.format(
+        "{\"messageId\": \"%s\", \"messageHash\": \"%s\", \"recipient\": \"%s\", \"message\": \"%s\"}",
+        escapeJson(messageId),
+        escapeJson(messageHash),
+        escapeJson(recipient),
+        escapeJson(message));
 
-    if (recipient.matches("^\\+27\\d{9}$")) {
-        return "Cell phone number successfully captured.";
-    } else {
-
-    return "Cell phone number incorrectly formatted or does not contain international code.";
+    try (FileWriter writer = new FileWriter("messages.json", true)) {
+        writer.write(json + System.lineSeparator());
+    } catch (IOException e) {
+        System.out.println("Could not store the message: " + e.getMessage());
+    }
 }
 
+private String escapeJson(String value) {
+    if (value == null) {
+        return "";
     }
-    public static String checkMessageNumber(String number){
-     if(number.length()<=250){
-         
-     }else {
-      int over = number.length()-250;
-      return "Description is " + over + "Characters" + "too long";
-     }  
-    }
-    // String: create Message Hash
-    public String createMessageHash() {
+    return value.replace("\\", "\\\\")   // backslash first
+                .replace("\"", "\\\"")   // double quotes
+                .replace("\n", "\\n")    // newlines
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+}
 
-        String[] words = message.trim().split("\\s+");
+public String getMessageId() {
+    return messageId;
+}
 
-        String firstTwoNumbers = messageID.substring(0, 2);
-        int messageLength = message.length();
-        String firstWord = words[0];
-        String lastWord = words[words.length - 1];
+public String getMessageHash() {
+    return messageHash;
+}
 
-        return (firstTwoNumbers + ":" + messageLength + ":" + firstWord + lastWord
-        ).toUpperCase();
-    }
-
-
-    // String: Send, store or disregard message
-    public String SentMessage() {
-
-        Scanner input = new Scanner(System.in);
-
-        System.out.println();
-        System.out.println("Choose an option:");
-        System.out.println("1. Send Message");
-        System.out.println("2. Disregard Message");
-        System.out.println("3. Store Message to send later");
-
-        System.out.print("Enter your choice: ");
-
-        int choice = input.nextInt();
-
-        switch (choice) {
-
-            case 1:
-
-                sentMessages.add(this);
-                totalMessages++;
-
-                return "Message successfully sent";
-
-            case 2:
-
-                return "Press 0 to delete the message";
-
-            case 3:
-
-                storeMessage();
-
-                return "Message successfully stored";
-
-            default:
-
-                return "Invalid choice.";
-        }
-    }
-
-
-    // String: print all sent messages
-    public String printMessages() {
-
-        if (sentMessages.isEmpty()) {
-
-            return "No messages have been sent.";
-        }
-
-        String result = "";
-
-        for (Message currentMessage : sentMessages) {
-
-            result += "Message ID: "
-                    + currentMessage.messageID
-                    + "\n";
-
-            result += "Message Hash: "
-                    + currentMessage.messageHash
-                    + "\n";
-
-            result += "Recipient: "
-                    + currentMessage.recipient
-                    + "\n";
-
-            result += "Message: "
-                    + currentMessage.message
-                    + "\n";
-
-            result += "-------------------------\n";
-        }
-
-        return result;
-    }
-
-
-    // Int: return total messages
-    public static int returnTotalMessages() {
-
-        return totalMessages;
-    }
-
-
-    // Store message
-    public void storeMessage() {
-
-        System.out.println(
-                "Message successfully stored"
-        );
-    }
-
-
-    // Getters
-    public String getMessageID() {
-        return messageID;
-    }
-
-    public int getMessageNumber() {
-        return messageNumber;
-    }
-
-    public String getRecipient() {
-        return recipient;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getMessageHash() {
-        return messageHash;
-    }
+// TODO: add a resetTotals() method (depends on which total fields you're tracking)
 }
