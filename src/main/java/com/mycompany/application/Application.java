@@ -36,7 +36,7 @@ public class Application {
         String cellPhoneNumber = input.nextLine();
         boolean cellPhoneValid = registration.checkCellPhoneNumber(cellPhoneNumber);
         System.out.println(registration.cellphoneStatus(cellPhoneValid));
-
+         System.out.println("------------------------------------------------");
         // Stop if registration failed
         if (!(usernameValid && passwordValid && cellPhoneValid)) {
             System.out.println("Registration failed. Goodbye.");
@@ -44,7 +44,7 @@ public class Application {
         }
 
         System.out.println("User has been successfully registered.");
-
+         System.out.println("-----------------------------------------");
         // Login
         Login login = new Login(registration.getUsername(),
                 registration.getPassword(),
@@ -64,11 +64,11 @@ public class Application {
             System.out.println("Login failed. Goodbye.");
             return;
         }
-
+         System.out.println("----------------------------------------------------");
         // ============================ PART 2: QUICKCHAT ============================
 
         System.out.println("Welcome to QuickChat.");
-
+         System.out.println("-------------------------------------------");
         System.out.print("How many messages do you wish to enter? ");
         int maxMessages = Integer.parseInt(input.nextLine());
 
