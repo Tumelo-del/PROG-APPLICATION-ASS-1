@@ -23,7 +23,7 @@ public class Message {
         private String messageHash;
         private String status;
         
-        //shared by all messages hence they are static.
+        
         private static int totalSent = 0;
         private static String sentReport = "";
         
@@ -70,10 +70,7 @@ public class Message {
         }
         }
         
-        //Message Hash = first 2 digits of ID : message number : first word
-        //+ last word. In CAPITALS
-        //e.g 0012345678, message 0, "Hi thanks"
-        //00:0:HITHANKS -> Message Hash
+        
         public String createMessageHash(){
         String msg = message.trim();
         //first 2 digits of ID
@@ -111,18 +108,22 @@ public class Message {
         return "invalid option";
         }
         }
-        //add a message to the shared total
-        public void recordMessage(){
-        if ("Sent".equals(status)){
-        totalSent = totalSent + 1; //accumulator
-        sentReport = sentReport + getDetails() +
-                
-                }
+         
+       // add a message to the shared total
+        public void recordMessage() {
+            if ("Sent".equals(status)) {
+                totalSent = totalSent + 1; // accumulator
+                sentReport = sentReport + getDetails() + "\n\n";
+            }
         }
-        public String getDetails(){
-        return "Message ID: " + messageId +
-        "Message Hash: "+ messageHash + "Recipient: "+ recipient + "Message: "+ message;
-        }
+       public String getDetails() {
+    return String.format(
+            "Message ID:   %s%n" +
+            "Message Hash: %s%n" +
+            "Recipient:    %s%n" +
+            "Message:      %s",
+            messageId, messageHash, recipient, message);
+}
         //every message that is sent details
         public static String printMessages(){
         if (sentReport.equals("")){
