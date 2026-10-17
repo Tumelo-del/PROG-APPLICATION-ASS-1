@@ -52,9 +52,13 @@ public class Message {
         
         //recipient must be no more than 10 chars and start with an
         //international code (+)
-        public boolean checkRecipientCell(String cell) {
-        return cell.matches("^\\+27\\d{9}$");
+      public static String checkRecipientCell(String cell) {
+    if (cell != null && cell.matches("^\\+27\\d{9}$")) {
+        return "Cell phone number successfully captured.";
     }
+    return "Cell phone number is incorrectly formatted or does not contain an "
+            + "international code. Please correct the number and try again.";
+}
         
         
         //validate that the message is not more than 250 chars
