@@ -77,7 +77,7 @@ public class Registration {
         if (valid) {
             return "Username successfully captured.";
         } else {
-            return "Username is not correctly formatted; please ensure that your username contains an underscore and is no more than five characters in length.";
+            return "Username is not correctly formatted, please ensure that your username contains an underscore and is no more than five characters in length.";
         }
     }
 
