@@ -109,7 +109,7 @@ public class Application {
                     System.out.print("Message: ");
                     String message = input.nextLine();
                     String msgResults = Message.checkMessage(message);
-                    while (!msgResults.equals("Message sent")) {
+                    while (!msgResults.equals("Message ready to send.")) {
                         System.out.println(msgResults);
                         System.out.print("Message: ");
                         message = input.nextLine();
