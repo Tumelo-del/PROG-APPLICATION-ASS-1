@@ -143,7 +143,7 @@ public class RegistrationTest {
         System.out.println("usernameStatus");
         boolean valid = false;
         Registration instance = new Registration();
-        String expResult = "Username is not correctly formatted, please ensure that your username ccontains an underscore and is no more than five characters in length.";
+        String expResult = "Username is not correctly formatted, please ensure that your username contains an underscore and is no more than five characters in length.";
         String result = instance.usernameStatus(valid);
         assertEquals(expResult, result);
         
