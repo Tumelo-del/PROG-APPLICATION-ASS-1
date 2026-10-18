@@ -116,10 +116,14 @@ public class Message {
                 sentReport = sentReport + getDetails() + "\n\n";
             }
         } 
-       public String getDetails(){
-        return "Message ID: " + messageId +
-        "Message Hash: "+ messageHash + "Recipient: "+ recipient + "Message: "+ message;
-        }
+            public String getDetails() {
+         return String.format(
+                 "Message ID:   %s%n" +
+                 "Message Hash: %s%n" +
+                 "Recipient:    %s%n" +
+                 "Message:      %s",
+                 messageId, messageHash, recipient, message);
+     }
         //every message that is sent details
         public static String printMessages(){
         if (sentReport.equals("")){
@@ -168,5 +172,9 @@ public String getMessageHash() {
     return messageHash;
 }
 
-// TODO: add a resetTotals() method (depends on which total fields you're tracking)
+// reset the shared totals
+public static void resetTotals() {
+    totalSent = 0;
+    sentReport = "";
+}
 }
