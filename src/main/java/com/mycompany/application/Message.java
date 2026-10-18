@@ -62,50 +62,56 @@ public class Message {
         
         
         //validate that the message is not more than 250 chars
-        public static String checkMessage(String msg){
-        if (msg.length()<=250){
-        return "Message sent";
-        }else{
-        return "Please enter a message of less than 250 characters.";
+        public static String checkMessage(String message) {
+        if (message.length() <= 250) {
+            return "Message ready to send.";
         }
-        }
+        int excess = message.length() - 250;
+        return "Message exceeds 250 characters by " + excess + "; please reduce the size.";
+    }
         
-        
-        public String createMessageHash(){
-        String msg = message.trim();
-        //first 2 digits of ID
-        String idFirst2 = messageId.substring(0,2);
-        //First word -from where it starts to where theres a space
-        String firstWord;
-        int firstSpace = msg.indexOf(" ");
-        if(firstSpace == -1){
+        public String createMessageHash() {
+    String msg = message.trim();
+
+    // first 2 digits of ID
+    String idFirst2 = messageId.substring(0, 2);
+
+    // first word - from the start to the first space
+    String firstWord;
+    int firstSpace = msg.indexOf(" ");
+    if (firstSpace == -1) {
         firstWord = msg;
-        }else{
-        firstWord = msg.substring(0,firstSpace);
-        }
-        //last word -from after the last space to the end
-        int lastSpace = msg.lastIndexOf(" ");
-        String lastWord = msg.substring(lastSpace+1);
-        String code = idFirst2 + ":" + messageNumber +":"+
-        firstWord + lastWord;
-        return code.toUpperCase();
-        }
+    } else {
+        firstWord = msg.substring(0, firstSpace);
+    }
+
+    // last word - from after the last space to the end
+    int lastSpace = msg.lastIndexOf(" ");
+    String lastWord = msg.substring(lastSpace + 1);
+
+    // remove punctuation such as ? , . ! so "tonight?" becomes "tonight"
+    firstWord = firstWord.replaceAll("[^A-Za-z0-9]", "");
+    lastWord = lastWord.replaceAll("[^A-Za-z0-9]", "");
+
+    String code = idFirst2 + ":" + messageNumber + ":" + firstWord + lastWord;
+    return code.toUpperCase();
+}
         
         
         //1 - send, 2 - disregard, 3 - store to send later
         public String sentMessage(int choice){
         if(choice == 1){
         status = "Sent";
-        return "Message successfully sent";
+        return "Message successfully sent.";
         }else if(choice == 2){
-        status = "Disregarded";
-        return "Press 0 to delete the message";
+        status = "Disregarded.";
+        return "Press 0 to delete the message.";
         }else if(choice == 3){
-        status = "Stored";
+        status = "Stored.";
         storeMessage();
-        return "Message successfully stored";
+        return "Message successfully stored.";
         }else{
-        return "invalid option";
+        return "invalid option.";
         }
         }
         //add a message to the shared total
