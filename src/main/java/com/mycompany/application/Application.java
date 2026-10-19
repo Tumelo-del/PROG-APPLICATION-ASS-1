@@ -108,14 +108,15 @@ public class Application {
                     // Message text
                     System.out.print("Message: ");
                     String message = input.nextLine();
-                    String msgResults = Message.checkMessage(message);
-                    while (!msgResults.equals("Message ready to send.")) {
-                        System.out.println(msgResults);
-                        System.out.print("Message: ");
-                        message = input.nextLine();
-                        msgResults = Message.checkMessage(message);
-                    }
+                    
+                String msgResults = Message.checkMessage(message);
+                while(!msgResults.equals("Message sent")){
                     System.out.println(msgResults);
+                    System.out.print("Message: ");
+                    message = input.nextLine();
+                    msgResults = Message.checkMessage(message);
+                }
+                System.out.println(msgResults);
 
                     // Create the message object
                     String messageId = Message.generateMessageID();
