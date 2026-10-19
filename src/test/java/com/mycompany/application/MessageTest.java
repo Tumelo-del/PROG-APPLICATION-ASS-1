@@ -91,7 +91,7 @@ public class MessageTest {
     public void ValidtestCheckMessage() {
         System.out.println("checkMessage");
         String msg = "Hi Mike, can you join us for dinner tonight?";
-        String expResult = "Message ready to send.";
+        String expResult = "Message sent.";
         String result = Message.checkMessage(msg);
         assertEquals(expResult, result);
     }
@@ -99,7 +99,7 @@ public class MessageTest {
      public void InvalidtestCheckMessage() {
         System.out.println("checkMessage");
         String msg = "a".repeat(255); // 5 characters over the limit
-        String expResult = "Message exceeds 250 characters by 5; please reduce the size.";
+        String expResult = "Please enter a message of less than 250 characters.";
         String result = Message.checkMessage(msg);
         assertEquals(expResult, result);
     }
