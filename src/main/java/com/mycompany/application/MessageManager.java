@@ -1,11 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.application;
 
-import com.google.gson.Gson;
-
+import com.google.gson.Gson;                 // FIX: this import was missing
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,14 +8,16 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
+ * Manages the five required arrays and the "Stored Messages" menu.
  *
  * @author Student
  */
 public class MessageManager {
-   public static final int MAX_MESSAGES = 50;
+
+    public static final int MAX_MESSAGES = 50;
     public static final String FILE_NAME = "messages.json";
 
-    // ===== The five arrays (no hard-coding, all filled while the app runs) =====
+    // ===== The five required arrays (all filled while the app runs, nothing hard-coded) =====
 
     // 1. Sent Message array
     private String[] sentMessages = new String[MAX_MESSAGES];
@@ -30,7 +27,8 @@ public class MessageManager {
     private String[] disregardedMessages = new String[MAX_MESSAGES];
     private int disregardedCount = 0;
 
-    // 3. Stored Messages arrays (parallel: the same index belongs to the same message)
+    // 3. Stored Messages array(s) - filled from the JSON file and from newly stored messages
+    //    (parallel arrays: the same index belongs to the same message)
     private String[] storedIds = new String[MAX_MESSAGES];
     private int[] storedNumbers = new int[MAX_MESSAGES];
     private String[] storedSenders = new String[MAX_MESSAGES];
@@ -75,8 +73,21 @@ public class MessageManager {
         }
     }
 
+    // Checks whether a message ID is already in the stored arrays (prevents duplicates)
+    private boolean isAlreadyStored(String id) {
+        for (int i = 0; i < storedCount; i++) {
+            if (storedIds[i] != null && storedIds[i].equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Copies one message into every stored array at the next free index
     private void addToStored(Message m) {
+        if (storedCount >= MAX_MESSAGES || isAlreadyStored(m.getMessageId())) {
+            return;
+        }
         storedIds[storedCount] = m.getMessageId();
         storedNumbers[storedCount] = m.getMessageNumber();
         storedSenders[storedCount] = m.getSender();
@@ -86,29 +97,30 @@ public class MessageManager {
         addHashAndId(m.getMessageHash(), m.getMessageId());
     }
 
-    // Reads messages.json INTO the stored arrays
+    // Reads messages.json INTO the stored arrays (uses Gson to turn JSON text into Message objects)
     public String loadStoredFromJson() {
         try {
-            String json = new String(Files.readAllBytes(Paths.get(FILE_NAME)), "UTF-8");
+            String json = new String(Files.readAllBytes(Paths.get(FILE_NAME)), StandardCharsets.UTF_8);
             Gson gson = new Gson();
-            Message[] loaded = gson.fromJson(json, Message[].class);   // JSON text -> Message array
+            Message[] loaded = gson.fromJson(json, Message[].class);
 
-            int count = 0;
+            int before = storedCount;
             if (loaded != null) {
                 for (int i = 0; i < loaded.length && storedCount < MAX_MESSAGES; i++) {
                     addToStored(loaded[i]);
-                    count++;
                 }
             }
-            return count + " stored message(s) loaded from " + FILE_NAME;
+            return (storedCount - before) + " stored message(s) loaded from " + FILE_NAME;
         } catch (IOException e) {
             return "No stored messages on file yet.";
+        } catch (RuntimeException e) {
+            return "Could not read " + FILE_NAME + " (invalid JSON).";
         }
     }
 
-    // =====================================================================
-    // STORED MESSAGES MENU (the fourth main menu option)
-    // =====================================================================
+ 
+    // STORED MESSAGES MENU  
+ 
 
     public void showStoredMenu(Scanner input) {
         boolean inStored = true;
@@ -123,7 +135,14 @@ public class MessageManager {
             System.out.println("6) Display a report of all stored messages");
             System.out.println("7) Back to the main menu");
             System.out.print("Choose an option: ");
-            int choice = Integer.parseInt(input.nextLine());
+
+            int choice;
+            try {
+                choice = Integer.parseInt(input.nextLine().trim());
+            } catch (NumberFormatException e) {      // FIX: no crash on letters / empty input
+                System.out.println("Please enter a number from 1 to 7.");
+                continue;
+            }
 
             if (choice == 1) {
                 System.out.println(displaySendersAndRecipients());
@@ -148,9 +167,9 @@ public class MessageManager {
         }
     }
 
-    // =====================================================================
+  
     // THE SIX STORED MESSAGE FEATURES
-    // =====================================================================
+    
 
     // a) Display the sender and recipient of all stored messages
     public String displaySendersAndRecipients() {
@@ -179,7 +198,7 @@ public class MessageManager {
         return longest;
     }
 
-    // c) Search for a message ID and display the recipient and message
+    // c) Search for a message ID and display the corresponding recipient and message
     public String searchById(String id) {
         for (int i = 0; i < storedCount; i++) {
             if (storedIds[i].equals(id)) {
@@ -262,67 +281,64 @@ public class MessageManager {
         return "Message \"" + deleted + "\" successfully deleted.";
     }
 
-  // Rewrites messages.json from the stored arrays
-private void rewriteJsonFile() {
-    String content = "[\n";
-    for (int i = 0; i < storedCount; i++) {
-        Message m = new Message(storedIds[i], storedNumbers[i],
-                                storedRecipients[i], storedMessages[i]);
-        content = content + "  {\"messageId\": \"" + escapeJson(storedIds[i]) + "\", "
-                + "\"messageNumber\": " + storedNumbers[i] + ", "
-                + "\"sender\": \"" + escapeJson(storedSenders[i]) + "\", "
-                + "\"recipient\": \"" + escapeJson(storedRecipients[i]) + "\", "
-                + "\"message\": \"" + escapeJson(storedMessages[i]) + "\", "
-                + "\"messageHash\": \"" + escapeJson(m.getMessageHash()) + "\"}";
-        if (i < storedCount - 1) {
-            content = content + ",";
+    // Rewrites messages.json from the stored arrays
+    private void rewriteJsonFile() {
+        String content = "[\n";
+        for (int i = 0; i < storedCount; i++) {
+            Message m = new Message(storedIds[i], storedNumbers[i],
+                                    storedRecipients[i], storedMessages[i]);
+            content = content + "  {\"messageId\": \"" + escapeJson(storedIds[i]) + "\", "
+                    + "\"messageNumber\": " + storedNumbers[i] + ", "
+                    + "\"sender\": \"" + escapeJson(storedSenders[i]) + "\", "
+                    + "\"recipient\": \"" + escapeJson(storedRecipients[i]) + "\", "
+                    + "\"message\": \"" + escapeJson(storedMessages[i]) + "\", "
+                    + "\"messageHash\": \"" + escapeJson(m.getMessageHash()) + "\"}";
+            if (i < storedCount - 1) {
+                content = content + ",";
+            }
+            content = content + "\n";
         }
-        content = content + "\n";
-    }
-    content = content + "]";
+        content = content + "]";
 
-    try {
-        Files.write(Paths.get(FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
-    } catch (IOException e) {
-        System.out.println("Could not update " + FILE_NAME);
+        try {
+            Files.write(Paths.get(FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            System.out.println("Could not update " + FILE_NAME);
+        }
     }
-}
 
-// Makes text safe to put inside a JSON string
-private String escapeJson(String value) {
-    if (value == null) {
-        return "";
+    // Makes text safe to put inside a JSON string
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                    .replace("\t", "\\t");
     }
-    return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-}
 
     // f) Display a report that lists the full details of all the stored messages
-public String report() {
-    if (storedCount == 0) {
-        return "No messages stored yet.";
+    public String report() {
+        if (storedCount == 0) {
+            return "No messages stored yet.";
+        }
+        String result = "STORED MESSAGES REPORT\n";
+        for (int i = 0; i < storedCount; i++) {
+            Message m = new Message(storedIds[i], storedNumbers[i],
+                                    storedRecipients[i], storedMessages[i]);
+            result = result + "----------\n"
+                   + "Message ID: " + storedIds[i] + "\n"
+                   + "Message Hash: " + m.getMessageHash() + "\n"
+                   + "Sender: " + storedSenders[i] + "\n"
+                   + "Recipient: " + storedRecipients[i] + "\n"
+                   + "Message: " + storedMessages[i] + "\n";
+        }
+        result = result + "----------\nTotal stored: " + storedCount;
+        return result;
     }
-    String result = "STORED MESSAGES REPORT\n";
-    for (int i = 0; i < storedCount; i++) {
-        Message m = new Message(storedIds[i], storedNumbers[i],
-                                storedRecipients[i], storedMessages[i]);
-        result = result + "----------\n"
-               + "Message ID: " + storedIds[i] + "\n"
-               + "Message Hash: " + m.getMessageHash() + "\n"
-               + "Sender: " + storedSenders[i] + "\n"
-               + "Recipient: " + storedRecipients[i] + "\n"
-               + "Message: " + storedMessages[i] + "\n";
-    }
-    result = result + "----------\nTotal stored: " + storedCount;
-    return result;
-}
 
-    // =====================================================================
-    // GETTERS (handy for your unit tests)
-    // =====================================================================
 
     public int getSentCount() {
         return sentCount;
@@ -338,6 +354,10 @@ public String report() {
 
     public int getTotalCaptured() {
         return totalCaptured;
+    }
+
+    public int getIdCount() {
+        return idCount;
     }
 
     public String getSentMessage(int index) {
@@ -360,4 +380,3 @@ public String report() {
         return messageIds[index];
     }
 }
- 
