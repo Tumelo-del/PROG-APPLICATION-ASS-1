@@ -19,17 +19,18 @@ import java.util.Random;
  */
 public class Message {
     
-         private String messageId;
+     private String messageId;
     private int messageNumber;
     private String recipient;
     private String message;
     private String messageHash;
     private String status;
-    
+    private String sender = "Unknown";      // ADDED
+
     //shared by all messages hence they are static.
     private static int totalSent = 0;
     private static String sentReport = "";
-    
+
     //constructor that runs everytime a new message is created
     public Message(String messageId, int messageNumber, String recipient,
             String message){
@@ -40,7 +41,14 @@ public class Message {
         this.status = "Captured";
         this.messageHash = createMessageHash();
     }
-    
+
+    // ADDED: same constructor, but with the sender
+    public Message(String messageId, int messageNumber, String recipient,
+            String message, String sender){
+        this(messageId, messageNumber, recipient, message);
+        this.sender = sender;
+    }
+
     //makes a random 10 digit number from 2 5 digits
     //int cannot hold 10 digit.
     public static String generateMessageID(){
@@ -49,12 +57,12 @@ public class Message {
         int secondHalf = rand.nextInt(90000) + 10000;
         return ""+firstHalf+secondHalf;
     }
-    
+
     //checking if the ID is not more than 10 chars
     public boolean checkMessageID(){
         return messageId.length()<=10;
     }
-    
+
     //recipient must start with an international code (+27) followed
     //by 9 digits
     public static String checkRecipientCell(String cell) {
@@ -64,7 +72,7 @@ public class Message {
         return "Cell phone number is incorrectly formatted or does not contain an "
                 + "international code. Please correct the number and try again.";
     }
-    
+
     //validate that the message is not more than 250 chars
     public static String checkMessage(String message) {
         if (message.length() <= 250) {
@@ -72,7 +80,7 @@ public class Message {
         }
         return "Please enter a message of less than 250 characters.";
     }
-    
+
     //Message Hash = first 2 digits of ID : message number : first word
     //+ last word. In CAPITALS
     //e.g 0012345678, message 0, "Hi thanks" -> 00:0:HITHANKS
@@ -102,7 +110,7 @@ public class Message {
         String code = idFirst2 + ":" + messageNumber + ":" + firstWord + lastWord;
         return code.toUpperCase();
     }
-    
+
     //1 - send, 2 - disregard, 3 - store to send later
     public String sentMessage(int choice){
         if(choice == 1){
@@ -119,7 +127,7 @@ public class Message {
             return "invalid option";
         }
     }
-    
+
     //add a message to the shared total
     public void recordMessage() {
         if ("Sent".equals(status)) {
@@ -127,7 +135,7 @@ public class Message {
             sentReport = sentReport + getDetails() + "\n\n";
         }
     }
-    
+
     public String getDetails() {
         return String.format(
                 "Message ID:   %s%n" +
@@ -136,7 +144,7 @@ public class Message {
                 "Message:      %s",
                 messageId, messageHash, recipient, message);
     }
-    
+
     //every message that is sent details
     public static String printMessages(){
         if (sentReport.equals("")){
@@ -145,15 +153,16 @@ public class Message {
             return sentReport;
         }
     }
-    
+
     public static int returnTotalMessages(){
         return totalSent;
     }
-    
+
     //saves the message into the JSON array in messages.json
     public void storeMessage(){
         String json = "  {\"messageId\": \"" + escapeJson(messageId) + "\", "
                 + "\"messageNumber\": " + messageNumber + ", "
+                + "\"sender\": \"" + escapeJson(sender) + "\", "          // ADDED
                 + "\"recipient\": \"" + escapeJson(recipient) + "\", "
                 + "\"message\": \"" + escapeJson(message) + "\", "
                 + "\"messageHash\": \"" + escapeJson(messageHash) + "\"}";
@@ -181,7 +190,7 @@ public class Message {
             System.out.println("Could not store the message: " + e.getMessage());
         }
     }
-    
+
     private String escapeJson(String value) {
         if (value == null) {
             return "";
@@ -192,15 +201,36 @@ public class Message {
                     .replace("\r", "\\r")
                     .replace("\t", "\\t");
     }
-    
+
     public String getMessageId() {
         return messageId;
     }
-    
+
     public String getMessageHash() {
         return messageHash;
     }
-    
+
+    // ADDED: getters
+    public int getMessageNumber() {
+        return messageNumber;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     // reset the shared totals
     public static void resetTotals() {
         totalSent = 0;

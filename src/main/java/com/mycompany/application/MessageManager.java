@@ -7,6 +7,7 @@ package com.mycompany.application;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -261,20 +262,43 @@ public class MessageManager {
         return "Message \"" + deleted + "\" successfully deleted.";
     }
 
-    // Deletes the file, then stores every remaining stored message again
-    private void rewriteJsonFile() {
-        try {
-            Files.deleteIfExists(Paths.get(FILE_NAME));
-        } catch (IOException e) {
-            System.out.println("Could not update " + FILE_NAME);
-            return;
+  // Rewrites messages.json from the stored arrays
+private void rewriteJsonFile() {
+    String content = "[\n";
+    for (int i = 0; i < storedCount; i++) {
+        Message m = new Message(storedIds[i], storedNumbers[i],
+                                storedRecipients[i], storedMessages[i]);
+        content = content + "  {\"messageId\": \"" + escapeJson(storedIds[i]) + "\", "
+                + "\"messageNumber\": " + storedNumbers[i] + ", "
+                + "\"sender\": \"" + escapeJson(storedSenders[i]) + "\", "
+                + "\"recipient\": \"" + escapeJson(storedRecipients[i]) + "\", "
+                + "\"message\": \"" + escapeJson(storedMessages[i]) + "\", "
+                + "\"messageHash\": \"" + escapeJson(m.getMessageHash()) + "\"}";
+        if (i < storedCount - 1) {
+            content = content + ",";
         }
-        for (int i = 0; i < storedCount; i++) {
-            Message m = new Message(storedIds[i], storedNumbers[i], storedRecipients[i],
-                                    storedMessages[i], storedSenders[i]);
-            m.storeMessage();
-        }
+        content = content + "\n";
     }
+    content = content + "]";
+
+    try {
+        Files.write(Paths.get(FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
+    } catch (IOException e) {
+        System.out.println("Could not update " + FILE_NAME);
+    }
+}
+
+// Makes text safe to put inside a JSON string
+private String escapeJson(String value) {
+    if (value == null) {
+        return "";
+    }
+    return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+}
 
     // f) Display a report that lists the full details of all the stored messages
 public String report() {
