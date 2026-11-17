@@ -1,6 +1,5 @@
 package com.mycompany.application;
 
-import com.google.gson.Gson;                 // FIX: this import was missing
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -83,44 +82,136 @@ public class MessageManager {
         return false;
     }
 
-    // Copies one message into every stored array at the next free index
+    // Copies one Message object into the stored arrays
     private void addToStored(Message m) {
-        if (storedCount >= MAX_MESSAGES || isAlreadyStored(m.getMessageId())) {
-            return;
-        }
-        storedIds[storedCount] = m.getMessageId();
-        storedNumbers[storedCount] = m.getMessageNumber();
-        storedSenders[storedCount] = m.getSender();
-        storedRecipients[storedCount] = m.getRecipient();
-        storedMessages[storedCount] = m.getMessage();
-        storedCount++;
-        addHashAndId(m.getMessageHash(), m.getMessageId());
+        addToStored(m.getMessageId(), m.getMessageNumber(), m.getSender(),
+                    m.getRecipient(), m.getMessage(), m.getMessageHash());
     }
 
-    // Reads messages.json INTO the stored arrays (uses Gson to turn JSON text into Message objects)
+    // Copies one message (as plain values) into every stored array at the next free index
+    private void addToStored(String id, int number, String sender,
+                             String recipient, String message, String hash) {
+        if (storedCount >= MAX_MESSAGES || isAlreadyStored(id)) {
+            return;
+        }
+        storedIds[storedCount] = id;
+        storedNumbers[storedCount] = number;
+        storedSenders[storedCount] = sender;
+        storedRecipients[storedCount] = recipient;
+        storedMessages[storedCount] = message;
+        storedCount++;
+        addHashAndId(hash, id);
+    }
+
+    // Reads messages.json INTO the stored arrays (no library, just string handling)
     public String loadStoredFromJson() {
         try {
             String json = new String(Files.readAllBytes(Paths.get(FILE_NAME)), StandardCharsets.UTF_8);
-            Gson gson = new Gson();
-            Message[] loaded = gson.fromJson(json, Message[].class);
-
             int before = storedCount;
-            if (loaded != null) {
-                for (int i = 0; i < loaded.length && storedCount < MAX_MESSAGES; i++) {
-                    addToStored(loaded[i]);
+            int pos = 0;
+
+            while (true) {
+                int start = json.indexOf('{', pos);
+                if (start == -1) {
+                    break;
                 }
+                int end = findObjectEnd(json, start);
+                if (end == -1) {
+                    break;
+                }
+                String obj = json.substring(start, end + 1);
+
+                int number = 0;
+                try {
+                    number = Integer.parseInt(getJsonValue(obj, "messageNumber").trim());
+                } catch (NumberFormatException e) {
+                    number = 0;
+                }
+
+                addToStored(getJsonValue(obj, "messageId"),
+                            number,
+                            getJsonValue(obj, "sender"),
+                            getJsonValue(obj, "recipient"),
+                            getJsonValue(obj, "message"),
+                            getJsonValue(obj, "messageHash"));
+
+                pos = end + 1;
             }
             return (storedCount - before) + " stored message(s) loaded from " + FILE_NAME;
         } catch (IOException e) {
             return "No stored messages on file yet.";
-        } catch (RuntimeException e) {
-            return "Could not read " + FILE_NAME + " (invalid JSON).";
         }
     }
 
- 
-    // STORED MESSAGES MENU  
- 
+    // Finds the closing } of the JSON object that starts at 'start' (ignores braces inside text)
+    private int findObjectEnd(String json, int start) {
+        boolean inString = false;
+        for (int i = start; i < json.length(); i++) {
+            char c = json.charAt(i);
+            if (inString) {
+                if (c == '\\') {
+                    i++;                       // skip the escaped character
+                } else if (c == '"') {
+                    inString = false;
+                }
+            } else if (c == '"') {
+                inString = true;
+            } else if (c == '}') {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Gets the value of a key from one JSON object, e.g. "sender": "+27..." -> +27...
+    private String getJsonValue(String obj, String key) {
+        int k = obj.indexOf("\"" + key + "\"");
+        if (k == -1) {
+            return "";
+        }
+        int colon = obj.indexOf(':', k + key.length() + 2);
+        if (colon == -1) {
+            return "";
+        }
+        int i = colon + 1;
+        while (i < obj.length() && Character.isWhitespace(obj.charAt(i))) {
+            i++;
+        }
+
+        String value = "";
+        if (i < obj.length() && obj.charAt(i) == '"') {
+            i++;                                           // skip opening quote
+            while (i < obj.length() && obj.charAt(i) != '"') {
+                char c = obj.charAt(i);
+                if (c == '\\' && i + 1 < obj.length()) {   // undo JSON escapes
+                    i++;
+                    char n = obj.charAt(i);
+                    if (n == 'n') {
+                        value = value + "\n";
+                    } else if (n == 'r') {
+                        value = value + "\r";
+                    } else if (n == 't') {
+                        value = value + "\t";
+                    } else {
+                        value = value + n;
+                    }
+                } else {
+                    value = value + c;
+                }
+                i++;
+            }
+        } else {                                           // a number, e.g. 3
+            while (i < obj.length() && obj.charAt(i) != ',' && obj.charAt(i) != '}') {
+                value = value + obj.charAt(i);
+                i++;
+            }
+        }
+        return value;
+    }
+
+    // =====================================================================
+    // STORED MESSAGES MENU (the fourth main menu option)
+    // =====================================================================
 
     public void showStoredMenu(Scanner input) {
         boolean inStored = true;
@@ -139,7 +230,7 @@ public class MessageManager {
             int choice;
             try {
                 choice = Integer.parseInt(input.nextLine().trim());
-            } catch (NumberFormatException e) {      // FIX: no crash on letters / empty input
+            } catch (NumberFormatException e) {      // no crash on letters / empty input
                 System.out.println("Please enter a number from 1 to 7.");
                 continue;
             }
@@ -167,9 +258,9 @@ public class MessageManager {
         }
     }
 
-  
+    // =====================================================================
     // THE SIX STORED MESSAGE FEATURES
-    
+    // =====================================================================
 
     // a) Display the sender and recipient of all stored messages
     public String displaySendersAndRecipients() {
@@ -339,6 +430,9 @@ public class MessageManager {
         return result;
     }
 
+    // =====================================================================
+    // GETTERS (handy for your unit tests)
+    // =====================================================================
 
     public int getSentCount() {
         return sentCount;
