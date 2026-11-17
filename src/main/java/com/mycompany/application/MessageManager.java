@@ -277,24 +277,24 @@ public class MessageManager {
     }
 
     // f) Display a report that lists the full details of all the stored messages
-    public String report() {
-        if (storedCount == 0) {
-            return "No messages stored yet.";
-        }
-        String result = "STORED MESSAGES REPORT\n";
-        for (int i = 0; i < storedCount; i++) {
-            Message m = new Message(storedIds[i], storedNumbers[i], storedRecipients[i],
-                                    storedMessages[i], storedSenders[i]);
-            result = result + "----------\n"
-                   + "Message ID: " + m.getMessageId() + "\n"
-                   + "Message Hash: " + m.getMessageHash() + "\n"
-                   + "Sender: " + m.getSender() + "\n"
-                   + "Recipient: " + m.getRecipient() + "\n"
-                   + "Message: " + m.getMessage() + "\n";
-        }
-        result = result + "----------\nTotal stored: " + storedCount;
-        return result;
+public String report() {
+    if (storedCount == 0) {
+        return "No messages stored yet.";
     }
+    String result = "STORED MESSAGES REPORT\n";
+    for (int i = 0; i < storedCount; i++) {
+        Message m = new Message(storedIds[i], storedNumbers[i],
+                                storedRecipients[i], storedMessages[i]);
+        result = result + "----------\n"
+               + "Message ID: " + storedIds[i] + "\n"
+               + "Message Hash: " + m.getMessageHash() + "\n"
+               + "Sender: " + storedSenders[i] + "\n"
+               + "Recipient: " + storedRecipients[i] + "\n"
+               + "Message: " + storedMessages[i] + "\n";
+    }
+    result = result + "----------\nTotal stored: " + storedCount;
+    return result;
+}
 
     // =====================================================================
     // GETTERS (handy for your unit tests)
