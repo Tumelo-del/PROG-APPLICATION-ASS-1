@@ -42,10 +42,9 @@ public class MessageManager {
 
     private int totalCaptured = 0;
 
-    // =====================================================================
+ 
     // POPULATING THE ARRAYS
-    // =====================================================================
-
+     
     // Puts a message into the right arrays, using the counters as the next free index
     public void addMessage(Message m) {
         totalCaptured = totalCaptured + 1;
@@ -209,9 +208,7 @@ public class MessageManager {
         return value;
     }
 
-    // =====================================================================
-    // STORED MESSAGES MENU (the fourth main menu option)
-    // =====================================================================
+  
 
     public void showStoredMenu(Scanner input) {
         boolean inStored = true;
@@ -258,9 +255,7 @@ public class MessageManager {
         }
     }
 
-    // =====================================================================
-    // THE SIX STORED MESSAGE FEATURES
-    // =====================================================================
+   
 
     // a) Display the sender and recipient of all stored messages
     public String displaySendersAndRecipients() {
@@ -430,9 +425,7 @@ public class MessageManager {
         return result;
     }
 
-    // =====================================================================
-    // GETTERS (handy for your unit tests)
-    // =====================================================================
+     
 
     public int getSentCount() {
         return sentCount;
