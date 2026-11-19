@@ -91,7 +91,7 @@ public class MessageTest {
     public void ValidtestCheckMessage() {
         System.out.println("checkMessage");
         String msg = "Hi Mike, can you join us for dinner tonight?";
-        String expResult = "Message sent.";
+        String expResult = "Message sent";
         String result = Message.checkMessage(msg);
         assertEquals(expResult, result);
     }
@@ -132,9 +132,9 @@ public class MessageTest {
         System.out.println("sentMessage");
         Message instance = new Message("0000000001", 0, "+27718693002",
                 "Hi Mike, can you join us for dinner tonight?");
-        assertEquals("Message successfully sent.", instance.sentMessage(1));
-        assertEquals("Press 0 to delete the message.", instance.sentMessage(2));
-        assertEquals("Message successfully stored.", instance.sentMessage(3));
+        assertEquals("Message successfully sent", instance.sentMessage(1));
+        assertEquals("Press 0 to delete the message", instance.sentMessage(2));
+        assertEquals("Message successfully stored", instance.sentMessage(3));
     }
        @Test
     public void InvalidtestSentMessage() {
